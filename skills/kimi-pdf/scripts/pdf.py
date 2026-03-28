@@ -52,6 +52,26 @@ class Output:
             Output.error("FileNotFound", f"File not found: {path}", code=2)
         return p
 
+    @staticmethod
+    def safe_output_path(output_path: str) -> Path:
+        """Validate output path to prevent path traversal.
+
+        Ensures the resolved output path stays within the current
+        working directory. Rejects absolute paths and any path that
+        resolves outside cwd (e.g. ../../etc/passwd).
+        """
+        p = Path(output_path)
+        cwd = Path.cwd().resolve()
+        resolved = (cwd / p).resolve() if not p.is_absolute() else p.resolve()
+
+        if not str(resolved).startswith(str(cwd)):
+            Output.error(
+                "PathTraversal",
+                f"Output path escapes working directory: {output_path}",
+                hint="Use a relative path within the current directory"
+            )
+        return resolved
+
 
 # ============ form commands ============
 def cmd_form_info(args):

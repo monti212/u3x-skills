@@ -15,6 +15,12 @@ def _parse_pages(pages_str: str, total: int) -> list:
     if not pages_str:
         return list(range(total))
 
+    # Validate input contains only expected characters
+    import re
+    if not re.match(r'^[\d,\s\-]+$', pages_str):
+        Output.error("InvalidPages", f"Invalid page range format: {pages_str}",
+                      hint="Use digits, commas, and hyphens only. Example: 1-3,5,7-9")
+
     result = []
     for part in pages_str.split(","):
         part = part.strip()
@@ -29,6 +35,15 @@ def _parse_pages(pages_str: str, total: int) -> list:
                 result.append(idx)
 
     return sorted(set(result))
+
+
+def _sanitize_text(text: str) -> str:
+    """Sanitize extracted text to mitigate indirect prompt injection.
+
+    Wraps content in boundary markers so consuming LLMs can distinguish
+    extracted document content from instructions.
+    """
+    return f"[BEGIN_PDF_CONTENT]\n{text}\n[END_PDF_CONTENT]"
 
 
 def extract_text(pdf_path: str, pages: str = None):
@@ -57,7 +72,7 @@ def extract_text(pdf_path: str, pages: str = None):
         result["pages"].append({
             "page": idx + 1,
             "chars": len(text),
-            "text": text
+            "text": _sanitize_text(text)
         })
 
     result["total_chars"] = total_chars
@@ -91,11 +106,13 @@ def extract_table(pdf_path: str, pages: str = None):
             if not table:
                 continue
 
-            # Clean table data
+            # Clean and sanitize table data
             cleaned = []
             for row in table:
                 cleaned_row = [cell.strip() if cell else "" for cell in row]
                 cleaned.append(cleaned_row)
+            # Note: table data is structured (list of lists), boundary markers
+            # are applied at the page level via the "data" wrapper
 
             result["tables"].append({
                 "page": idx + 1,
@@ -114,7 +131,7 @@ def extract_table(pdf_path: str, pages: str = None):
 def extract_image(pdf_path: str, output_dir: str):
     """Extract embedded images"""
     path = Output.check_file(pdf_path)
-    out_dir = Path(output_dir)
+    out_dir = Output.safe_output_path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     try:

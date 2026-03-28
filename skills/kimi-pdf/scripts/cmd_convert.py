@@ -61,10 +61,11 @@ def convert_to_pdf(input_path: str, output_path: str = None):
             hint="Please install LibreOffice: https://www.libreoffice.org/download/"
         )
 
-    # Determine output path
+    # Determine output path (validated against path traversal)
     if output_path:
-        out_dir = Path(output_path).parent
-        out_name = Path(output_path).stem
+        validated = Output.safe_output_path(output_path)
+        out_dir = validated.parent
+        out_name = validated.stem
     else:
         out_dir = path.parent
         out_name = path.stem

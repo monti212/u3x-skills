@@ -13,13 +13,20 @@ The goal is to create **professional PDFs that exceed user expectations**.
 
 ### Step 1: Install Environment
 
-Tectonic is not pre-installed. Install it first:
+Tectonic is not pre-installed. Install it using a package manager:
 
 ```bash
-cd ~ && curl -fsSL https://drop-sh.fullyjustified.net | sh && ls -la tectonic
+# macOS
+brew install tectonic
+
+# Linux (via Cargo)
+cargo install tectonic
+
+# Verify installation
+tectonic --version
 ```
 
-**Note**: Tectonic will be installed to `~/tectonic` (user home directory)
+**Note**: Prefer package manager installation over piping remote scripts to a shell.
 
 **Compilation Command**:
 

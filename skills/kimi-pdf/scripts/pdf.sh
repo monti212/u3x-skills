@@ -47,9 +47,14 @@ cmd_check() {
 cmd_fix() {
   local rc=0
 
+  # Pinned dependency versions for reproducible, auditable installs
+  local PLAYWRIGHT_VERSION="1.58.1"
+  local PIKEPDF_VERSION="9.7.0"
+  local PDFPLUMBER_VERSION="0.11.6"
+
   if command -v npm &>/dev/null; then
-    echo "Installing Playwright (global)..."
-    if ! npm install -g playwright >/dev/null; then
+    echo "Installing Playwright@${PLAYWRIGHT_VERSION} (global)..."
+    if ! npm install -g "playwright@${PLAYWRIGHT_VERSION}" >/dev/null; then
       echo "Failed to install Playwright via npm."
       rc=3
     fi
@@ -65,8 +70,8 @@ cmd_fix() {
   fi
 
   if command -v python3 &>/dev/null; then
-    echo "Installing Python dependencies (pikepdf, pdfplumber)..."
-    if ! python3 -m pip install --user -U pikepdf pdfplumber >/dev/null; then
+    echo "Installing Python dependencies (pikepdf==${PIKEPDF_VERSION}, pdfplumber==${PDFPLUMBER_VERSION})..."
+    if ! python3 -m pip install --user "pikepdf==${PIKEPDF_VERSION}" "pdfplumber==${PDFPLUMBER_VERSION}" >/dev/null; then
       echo "Failed to install Python dependencies."
       rc=3
     fi

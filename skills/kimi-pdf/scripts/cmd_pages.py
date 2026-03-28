@@ -75,7 +75,7 @@ def pages_merge(pdf_paths: list, output_path: str):
 def pages_split(pdf_path: str, output_dir: str):
     """Split PDF into single-page files"""
     path = Output.check_file(pdf_path)
-    out_dir = Path(output_dir)
+    out_dir = Output.safe_output_path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     try:

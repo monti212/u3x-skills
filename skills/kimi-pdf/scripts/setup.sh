@@ -429,7 +429,7 @@ cmd_check() {
     echo "  Python:      brew install python3 (macOS) / apt install python3 (Ubuntu)"
     echo "  pikepdf:     pip install pikepdf pdfplumber --user"
     echo "  LibreOffice: brew install --cask libreoffice (macOS)"
-    echo "  Tectonic:    curl -fsSL https://drop-sh.fullyjustified.net | sh"
+    echo "  Tectonic:    brew install tectonic (macOS) / cargo install tectonic (Linux)"
 
     echo ""
     echo "=== Fix Version Mismatch ==="
